@@ -1,0 +1,185 @@
+# Xilinx CDMA Sequences
+
+```c++
+
+//==============================================================================
+// Type Definitions
+//------------------------------------------------------------------------------
+
+// CDMA Status Codes
+typedef enum {
+    CDMA_OK         = 0,
+    CDMA_ERR
+} CDMA_Status_e;
+
+//
+// CDMA CallBack Function Type
+//
+typedef void (* CDMACallBackFn)(void *DevPtr, uint32_t EventMask);
+
+//==============================================================================
+// Macro Definitions
+//------------------------------------------------------------------------------
+
+#define CDMA_EVENT_IOC      (1 << 0)
+#define CDMA_EVENT_DLY      (1 << 1)
+#define CDMA_EVENT_ERR      (1 << 2)
+
+//==============================================================================
+// Resource Classes
+//------------------------------------------------------------------------------
+
+//
+// Register Definition
+//
+// Note: Auto-generated from SystemRDL Spec.
+// This is just a forward declaration
+class CDMARegDef;
+
+//==============================================================================
+// InstanceHandle
+//------------------------------------------------------------------------------
+
+// Transfer Control
+typedef union {
+    u32 Cfg;
+    struct {
+        u32 SGMode  : 1;
+        u32 Cyclic  : 1;
+        u32 KHR     : 1;
+        u32 KHW     : 1;
+    } CfgItems;
+} CDMA_XferCtrl_t;
+
+// Transfer Configuration
+typedef struct {
+    CDMA_XferCtrl_t XferCtrl;
+    u32 Length;
+    u64 SrcAddr;
+    u64 DestAddr;
+} CDMA_XferConfig_t;
+
+// Device Configuration
+typedef union {
+    u32 Cfg;
+    struct {
+        u32 IrqEn       : 1;
+        u32 ErrIrqEn    : 1;
+        u32 DlyIrqEn    : 1;
+        u32 IOCIrqEn    : 1;
+        u32 IrqThresh   : 8;
+        u32 IrqDelay    : 8;
+    } CfgItems;
+} CDMA_Config_t;
+
+// Instance Handle Struct
+typedef struct CDMA_s {
+    u32 *BaseAddr;
+    CDMA_Config_t Config;
+    CDMACallBackFn CallBack;
+} CDMA_t;
+
+
+//==============================================================================
+// CDMA Sequence Class
+//------------------------------------------------------------------------------
+
+class CDMASeq : public HasSeq,
+                public HasResources {
+private:
+    Resource<IRQ> IrqRes;
+    Resource<Handle> HandleRes;
+    Resource<Memory> MemRes;
+    Resource<CDMARegDef> RegRes;
+
+public:
+
+    CDMASeq(const std:string &name,
+            const Resource<IRQ> &IrqRes_,
+            const Resource<CDMA_t> &HandleRes_,
+            const Resource<Memory> &MemRes_,
+            const Resource<CDMARegDef> &RegRes_
+            ) : HasSeq(name),
+                IrqRes(IrqRes_),
+                HandleRes(HandleRes_),
+                MemRes(MemRes_),
+                RegRes(RegRes_)
+    {}
+
+    //
+    // Init Sequence
+    //
+    __SEQ__ CDMA_Status_e CDMA_Init(CDMA_Config_t Config) {
+        HandleRes.BaseAddr = RegDefRes.GetBaseAddress());
+        HandleRes.Config = Config;
+        HandleRes.CallBack = nullptr;
+        return (CDMA_OK);
+    }
+
+    //
+    // IRQ/Events
+    //
+    __SEQ__ CDMA_Status_e CDMA_SetCallBack(CDMA_CallBackFn CallBack) {
+        HandleRes.CallBack = CallBack;
+        return (CDMA_OK);
+    }
+
+    __SEQ__ CDMA_Status_e CDMA_EnableEvents(u32 EventMask) {
+        If(EventMask & CDMA_EVENT_IOC) {
+            RegRes.CDMA_CTRL.IOC_IrqEn = 1;
+            HandleRes.Config.CfgItems.IOCIrqEn = 1;
+        }
+        If (EventMask & CDMA_EVENT_DLY) {
+            RegRes.CDMA_CTRL.Dly_IrqEn = 1;
+            HandleRes.Config.CfgItems.DlyIrqEn = 1;
+        }
+        If (EventMask & CDMA_EVENT_ERR) {
+            RegRes.CDMA_CTRL.Err_IrqEn = 1;
+            HandleRes.Config.CfgItems.ErrIrqEn = 1;
+        }
+
+        return (CDMA_OK);
+    }
+
+    __SEQ__ CDMA_Status_e CDMA_DisableEvents(u32 EventMask) {
+        If(EventMask & CDMA_EVENT_IOC) {
+            RegRes.CDMA_CTRL.IOC_IrqEn = 0;
+            HandleRes.Config.CfgItems.IOCIrqEn = 0;
+        }
+        If (EventMask & CDMA_EVENT_DLY) {
+            RegRes.CDMA_CTRL.Dly_IrqEn = 0;
+            HandleRes.Config.CfgItems.DlyIrqEn = 0;
+        }
+        If (EventMask & CDMA_EVENT_ERR) {
+            RegRes.CDMA_CTRL.Err_IrqEn = 0;
+            HandleRes.Config.CfgItems.ErrIrqEn = 0;
+        }
+
+        return (CDMA_OK);
+    }
+
+    __SEQ__ CDMA_Status_e  CDMA_SetIRQDelay(u32 IrqDelay) {
+        If(IrqDelay > 255) return (CDMA_ERR);
+        RegRes.CDMA_CTRL.IRQDelay = IrqDelay;
+        HandleRes.Config.CgfItems.IrqDelay = IrqDelay;
+        return (CDMA_OK);
+    }
+
+    __SEQ__ CDMA_Status_e CDMA_Start(CDMA_XferConfig_t *XferConfig) {
+        If(XferConfig == nullptr) return (CDMA_ERR);
+        // Scatter-Gather Mode
+        If(XferConfig->XferCtrl.CfgItems.SGMode) {
+            // To-Do
+        }
+        // Simple Mode
+        Else {
+            RegRes.SA   = XferConfig->SrcAddr;
+            RegRes.DA   = XferConfig->DestAddr;
+            RegRes.BTT  = XferConfig->Length;
+        }
+
+        return CDMA_OK;
+    }
+
+};
+```

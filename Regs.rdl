@@ -1,0 +1,75 @@
+//------------------------------------------------------------------------------
+// SystemRDL v2.0
+//------------------------------------------------------------------------------
+// Purpose  : Xilinx CDMA Register Space
+// -----------------------------------------------------------------------------
+// Author   : Gedeon Nyengele
+// Date     : December 28, 2022
+//------------------------------------------------------------------------------
+
+//
+// This address map is provided for the following configuration of CMDA:
+// - SG included
+//
+addrmap xilinx_cmda_addr_map {
+
+    name    = "xilinx_cdma_addr_map";
+    desc    = "Register space definition for Xilinx AXI CMDA";
+
+    default addressing      = regalign;
+    default regwidth        = 32;
+    default accesswidth     = 32;
+    default alignment       = 4;
+
+    default littleendian;
+    default lsb0;
+
+    default sw              = rw;
+    default hw              = r;
+
+    //
+    // Control Register
+    //
+
+    reg {
+        name    = "CDMACR";
+        desc    = "CDMA Control Register";
+
+
+        // Field: TailPntrEn
+        field {
+            desc    = "Indicates tail pointer mode is enabled in the SG engine".
+            sw      = r;
+            hw      = na;
+        } TailPntrEn[1:1] = 0x1;
+
+        // Field: Reset
+        field {
+            desc    = "Soft reset control for the AXI CMDA core";
+        } Reset[2:2] = 0x0;
+
+        // Field: SGMode
+        field {
+            desc    = "Controls transfer mode of the CDMA. 1 = SG, 0 = Simple";
+        } SGMode[3:3] = 0x0;
+
+        // Field: KHR - Key Hole Read
+        field {
+            desc    = "Enables the keyhole read (FIXED-address AXI transaction)";
+        } KHR[4:4] = 0x0;
+
+        // Field: KHW - Key Hole Write
+        field {
+            desc    = "Enables the keyhole write (FIXED-address AXI transaction)";
+        } KHW[5:5] = 0x0;
+
+        // Field: Cyclic BD Enable
+        field {
+            desc    = "Enables cyclic buffer descriptor";
+        } CycBDEn[6:6] = 0x0;
+
+        // Field:
+
+    } CDMACR @ 0x00;
+
+};
