@@ -1,0 +1,9 @@
+# Onyx DMA Sequences
+
+Onyx DMA provides the following features:
+- interrupt support
+- AXI-4 (INCR mode only)
+- 1-D transfers (source address, destination address, length)
+- APB interface for register file access
+
+## Register Description
