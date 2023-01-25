@@ -65,7 +65,7 @@ static DMA_Status Helper_AHADMA_IRQHandler(AHADMAInst *InstancePtr)
 {
     DMA_Status stat = AHADMA_GetStatCode(AHADMA_HAL_Regs.STAT.STATUS_CODE);
     // Clear Interrupt
-    DMA_HAL_Regs.INTR.CLR = 1;
+    AHADMA_HAL_Regs.INTR.CLR = 1;
     return stat;
 }
 
@@ -106,7 +106,7 @@ DMA_Status SimpleTransfer(u32 Src, u32 Dest, u32 Size)
     // Requirements
     if (Src & 0x3)  return DMA_ALIGNMENT_ERROR;
     if (Src & 0x3)  return DMA_ALIGNMENT_ERROR;
-    if (!(Size < (1 << 30))) return DMA_VALUE_RROR;
+    if (!(Size < (1 << 30))) return DMA_VALUE_ERROR;
 
     // Transfer Setup
     AHADMA_HAL_Regs.SA.ADDR     = Src;  // alignment taken care of
