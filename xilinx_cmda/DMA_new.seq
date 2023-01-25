@@ -1,0 +1,15 @@
+```c++
+
+class CDMA : public RegSeq {
+
+
+    //
+    // Initialization
+    //
+    __SEQ__ CDMA_Status Init(CDMA_Config Config) {
+        
+    }
+
+};
+
+```

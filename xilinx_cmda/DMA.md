@@ -55,3 +55,31 @@ The DMA sequences make use of the following resources:
 - Instance Handle
 - Memory
 - Register Space
+
+## Resources
+
+When an IP is connected in a system, it requires certain interfaces to be connected externally. Some of these interfaces are:
+- power control
+- clocks and resets
+- interrupts
+- data interfaces
+
+From a software perspective, when specifying sequence specs for an IP, there might be dependencies on system-centric components. Most of the times, those components have a 1-to-1 mapping with physical interfaces.
+
+The challenge in writing seqences is that they must be provided in an implementation-indepdent fashion. That means we should not rely on a target software environment (bare-metal, OS, etc.) to completely specify a sequence.
+
+The solution we are proposing is to define abstractions for those components/services at the sequence level. One of the main questions we need to answer is:
+- How do we deal with resource binding
+
+A DMA requires the following resources:
+- interrupt
+- register definition
+- memory
+
+The interrupt resource is used to deal with interrupts generically within the sequences.
+Questions:
+- How to deal with multiple physical interrupt lines
+
+The register definition resource abstracts the details about how register access is implemented in the target environment. It allows us to specify register actions (read/writes).
+
+The memory resource is a generalization of an accessible memory-mapped region. Other more specific abstractions can be built on top of the memory resource/abstraction
