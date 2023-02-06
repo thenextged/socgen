@@ -1,4 +1,4 @@
-# The DMA Abstraction
+# The DMA Hardware Abstraction
 
 In this study, we want to develop a unified abstraction for DMA devices.
 Our strategy is as follows:
@@ -34,4 +34,4 @@ DMA engines vary in the number of physical interrupt line they support. Some DMA
 
 Below are the most seen configurations:
 - single-IRQ DMA: all events/interrupts collapse onto a single physical interface
-- multiple-IRQ DMA: 
+- multiple-IRQ DMA:
