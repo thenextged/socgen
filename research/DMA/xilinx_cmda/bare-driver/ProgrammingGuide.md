@@ -44,7 +44,7 @@ typedef struct CDMA_t {
     u32 BTT;
 } CDMA_t;
 
-// CDMA Transfer (Simple, No IRQ) 
+// CDMA Transfer (Simple, No IRQ)
 int CDMA_Xfer_Simple_Poll(CDMA_t *InstancePtr, u64 SrcAddr, u64 DestAddr, u32 Len)
 {
     if (!InstancePtr) return XST_FAILURE;
@@ -56,8 +56,8 @@ int CDMA_Xfer_Simple_Poll(CDMA_t *InstancePtr, u64 SrcAddr, u64 DestAddr, u32 Le
 
     InstancePtr->SA     = SrcAddr;
     InstancePtr->DA     = DestAddr;
- 
-    #else 
+
+    #else
 
     InstancePtr->SA     = (u32) SrcAddr;
     InstancePtr->DA     = (u32) DestAddr;
